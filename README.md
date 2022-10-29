@@ -13,6 +13,19 @@ new FFmpeg()
   
 ```
 
+## Relay Live Stream Multiple Output
+```
+const FFmpeg = require('node-ffmpeg-pro');
+
+new FFmpeg()
+  .Input('rtmp://192.168.0.2/live/bbb')
+  .Output('rtmp://192.168.0.3', FFmpeg.Copy(), FFmpeg.Format('flv'))
+  .Output('rtmp://192.168.0.4', FFmpeg.Copy(), FFmpeg.Format('flv'))
+  .Output('rtmp://192.168.0.5', FFmpeg.Copy(), FFmpeg.Format('flv'))
+  .Run('/usr/local/bin/ffmpeg');
+  
+```
+
 ## Save Live Stream
 ```
 const FFmpeg = require('node-ffmpeg-pro');
