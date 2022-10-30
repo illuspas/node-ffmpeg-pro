@@ -1,6 +1,6 @@
 {
   "name": "node-ffmpeg-pro",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Nodejs ffmpeg process caller",
   "main": "src/ffmpeg.js",
   "directories": {
