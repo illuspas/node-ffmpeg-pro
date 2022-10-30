@@ -7,6 +7,7 @@ const { spawn } = require('child_process');
 
 class ffmpeg {
   constructor() {
+    this.cb = null;
     this.args = [];
   }
 
@@ -54,6 +55,15 @@ class ffmpeg {
   }
 
   /**
+   * 设置日志回调
+   * @param {Function} cb 回调函数
+   */
+  Logs(cb) {
+    this.cb = cb;
+    return this;
+  }
+
+  /**
    * 运行命令
    * @param {string} binpath ffmpeg可执行程序路径
    * @param  {...Object} args 运行参数
@@ -77,11 +87,19 @@ class ffmpeg {
       });
 
       this.ffmpeg_exec.stdout.on('data', (data) => {
-        console.log(`${data}`);
+        if (this.cb) {
+          this.cb(`${data}`);
+        } else {
+          console.log(`${data}`);
+        }
       });
 
       this.ffmpeg_exec.stderr.on('data', (data) => {
-        console.log(`${data}`);
+        if (this.cb) {
+          this.cb(`${data}`);
+        } else {
+          console.log(`${data}`);
+        }
       });
 
       this.ffmpeg_exec.on('close', (code) => {
@@ -90,12 +108,28 @@ class ffmpeg {
     });
   }
 
-  Quit() {
-    this.ffmpeg_exec.stdin.write('q');
+  /**
+   * The `StdinWrite` method writes some data to the stream,
+   * @param {any} chunk Chunk
+   */
+  StdinWrite(chunk) {
+    return this.ffmpeg_exec.stdin.write(chunk)
   }
 
-  Kill() {
-    this.ffmpeg_exec.kill();
+  /**
+   * Quit ffmpeg
+   */
+  Quit() {
+    return this.StdinWrite('q');
+  }
+
+  /**
+   * The `Kill()` method sends a signal to the child process.
+   * @param {NodeJS.Signals | number} signal Signal
+   * @returns returns `true` if [`kill(2)`](http://man7.org/linux/man-pages/man2/kill.2.html) succeeds, and `false` otherwise.
+   */
+  Kill(signal) {
+    return this.ffmpeg_exec.kill(signal);
   }
 
   /**
