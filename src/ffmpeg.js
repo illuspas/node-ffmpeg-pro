@@ -59,34 +59,35 @@ class ffmpeg {
    * @param  {...Object} args 运行参数
    */
   Run(binpath, ...args) {
-    args.forEach(arg => {
-      for (const key in arg) {
-        if (Object.hasOwnProperty.call(arg, key)) {
-          const element = arg[key];
-          this.args.push('-' + key);
-          if (element) {
-            this.args.push(element);
+    return new Promise((resolve, reject) => {
+      args.forEach(arg => {
+        for (const key in arg) {
+          if (Object.hasOwnProperty.call(arg, key)) {
+            const element = arg[key];
+            this.args.push('-' + key);
+            if (element) {
+              this.args.push(element);
+            }
           }
         }
-      }
-    });
-    this.ffmpeg_exec = spawn(binpath, this.args);
-    this.ffmpeg_exec.on('error', (e) => {
-      console.log(e);
-    });
+      });
+      this.ffmpeg_exec = spawn(binpath, this.args);
+      this.ffmpeg_exec.on('error', (e) => {
+        reject(e);
+      });
 
-    this.ffmpeg_exec.stdout.on('data', (data) => {
-      console.log(`FF_LOG:${data}`);
-    });
+      this.ffmpeg_exec.stdout.on('data', (data) => {
+        console.log(`${data}`);
+      });
 
-    this.ffmpeg_exec.stderr.on('data', (data) => {
-      console.log(`FF_LOG:${data}`);
-    });
+      this.ffmpeg_exec.stderr.on('data', (data) => {
+        console.log(`${data}`);
+      });
 
-    this.ffmpeg_exec.on('close', (code) => {
-
+      this.ffmpeg_exec.on('close', (code) => {
+        resolve(code);
+      });
     });
-    return this;
   }
 
   Quit() {
